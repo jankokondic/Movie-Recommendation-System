@@ -6,6 +6,7 @@ import (
 	"math/rand/v2"
 	"os"
 	"root/constants"
+	"root/statistic"
 	"strconv"
 )
 
@@ -165,6 +166,9 @@ func ModelRunner() {
 		})
 	}
 
+	stat := statistic.New()
+	stat.Load(rating)
+
 	conf := Configuration{
 		NumberOfLatentFactors:   20,
 		LearningRate:            0.01,
@@ -184,6 +188,7 @@ func ModelRunner() {
 		engine.LearningRate,
 		engine.RegularizationParameter,
 		engine.NumberOfEpochs,
+		stat,
 	})
 
 	// for _, data := range engine.Data[:100] {

@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/gob"
 	"os"
+	"root/statistic"
 )
 
 type Model struct {
@@ -13,6 +14,8 @@ type Model struct {
 	LearningRate            float64
 	RegularizationParameter float64
 	NumberOfEpochs          int
+
+	statistic.Statistic
 }
 
 func SaveModel(path string, model Model) error {

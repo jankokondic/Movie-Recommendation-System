@@ -16,7 +16,10 @@ func main() {
 	}
 
 	testData := reader.ReadTestData(constants.TestFilePath)
-	mea, rmse := model.Test(testData, trainedModel)
+	evaluation := model.Test(testData, trainedModel)
 
-	fmt.Println(mea, rmse)
+	fmt.Println("MF:", evaluation.MatrixFactorization)
+	fmt.Println("Global:", evaluation.GlobalAverage)
+	fmt.Println("User:", evaluation.UserAverage)
+	fmt.Println("Movie:", evaluation.MovieAverage)
 }
