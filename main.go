@@ -19,8 +19,8 @@ type Configuration struct {
 }
 
 type Engine struct {
-	User   map[string][]float64
-	Movies map[string][]float64
+	User   map[int][]float64
+	Movies map[int][]float64
 	Data   []constants.Rating
 	Configuration
 }
@@ -31,29 +31,50 @@ func RandomFloat(min, max float64) float64 {
 
 func New(data []constants.Rating, configuration Configuration) *Engine {
 	return &Engine{
-		User:          make(map[string][]float64),
-		Movies:        make(map[string][]float64),
+		User:          make(map[int][]float64),
+		Movies:        make(map[int][]float64),
 		Data:          data,
 		Configuration: configuration,
 	}
 }
 
-func (e *Engine) InitialLatentFactors() []float64 {
+func (e *Engine) CreateLatentFactor() []float64 {
 	numberOfLatentFactor := e.NumberOfLatentFactors
 
 	latentFactor := make([]float64, numberOfLatentFactor)
 
-	for index := 0; index < numberOfLatentFactor; index++ {
+	for index := range numberOfLatentFactor {
 		latentFactor[index] = RandomFloat(e.InitializationMin, e.InitializationMax)
 	}
 
 	return latentFactor
 }
 
+func ensureLatentFactor(store map[int][]float64, id int, create func() []float64) {
+	if _, exists := store[id]; !exists {
+		store[id] = create()
+	}
+}
+
+func (e *Engine) InitialLatentFactor(movieID, userID int) {
+	ensureLatentFactor(e.User, userID, e.CreateLatentFactor)
+	ensureLatentFactor(e.Movies, movieID, e.CreateLatentFactor)
+}
+
 func (e *Engine) Init() {
 	for _, record := range e.Data {
-
+		e.InitialLatentFactor(record.MovieID, record.UserID)
 	}
+}
+
+func DotProduct(userLatentFactor, movieLatentFactor []float64) float64 {
+	var product float64
+
+	for index := range userLatentFactor {
+		product += userLatentFactor[index] * movieLatentFactor[index]
+	}
+
+	return product
 }
 
 func main() {
@@ -111,5 +132,4 @@ func main() {
 
 	engine := New(rating, conf)
 	engine.Init()
-
 }
