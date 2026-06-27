@@ -6,7 +6,6 @@ import (
 	"math/rand/v2"
 	"os"
 	"root/constants"
-	"root/statistic"
 	"strconv"
 )
 
@@ -122,7 +121,7 @@ func (e *Engine) Run() {
 	}
 }
 
-func ModelRunner() {
+func ModelRunner(conf Configuration) {
 	inputFile, err := os.Open("rating.csv")
 	if err != nil {
 		panic(err)
@@ -166,17 +165,10 @@ func ModelRunner() {
 		})
 	}
 
-	stat := statistic.New()
+	stat := NewStat()
 	stat.Load(rating)
 
-	conf := Configuration{
-		NumberOfLatentFactors:   20,
-		LearningRate:            0.01,
-		RegularizationParameter: 0.02,
-		NumberOfEpochs:          20,
-		InitializationMin:       -0.1,
-		InitializationMax:       0.1,
-	}
+	
 
 	engine := New(rating, conf)
 	engine.Run()

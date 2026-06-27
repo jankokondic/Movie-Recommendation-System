@@ -9,6 +9,17 @@ import (
 )
 
 func main() {
+	conf := model.Configuration{
+		NumberOfLatentFactors:   20,
+		LearningRate:            0.01,
+		RegularizationParameter: 0.02,
+		NumberOfEpochs:          20,
+		InitializationMin:       -0.1,
+		InitializationMax:       0.1,
+	}
+
+	model.ModelRunner(conf)
+
 	trainedModel, err := model.LoadModel(constants.ModelPath)
 	if err != nil {
 		log.Println(err)
