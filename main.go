@@ -1,17 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"root/constants"
 	"root/model"
+	"root/reader"
 )
 
 func main() {
-	model, err := model.LoadModel(constants.ModelPath)
+	trainedModel, err := model.LoadModel(constants.ModelPath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	_ = model
+	testData := reader.ReadTestData(constants.TestFilePath)
+	mea, rmse := model.Test(testData, trainedModel)
+
+	fmt.Println(mea, rmse)
 }

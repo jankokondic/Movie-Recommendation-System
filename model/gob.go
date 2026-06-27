@@ -6,8 +6,8 @@ import (
 )
 
 type Model struct {
-	UserVectors  map[int][]float64
-	MovieVectors map[int][]float64
+	UserLatentFactor  map[int][]float64
+	MovieLatentFactor map[int][]float64
 
 	NumberOfLatentFactors   int
 	LearningRate            float64
