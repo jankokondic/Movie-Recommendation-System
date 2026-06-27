@@ -11,8 +11,8 @@ import (
 
 type Configuration struct {
 	NumberOfLatentFactors   int
-	LearningRate            float32
-	RegularizationParameter float32
+	LearningRate            float64
+	RegularizationParameter float64
 	NumberOfEpochs          int
 	InitializationMin       float64
 	InitializationMax       float64
@@ -75,6 +75,22 @@ func DotProduct(userLatentFactor, movieLatentFactor []float64) float64 {
 	}
 
 	return product
+}
+
+func Error(predictedRating float64, realRating float64) float64 {
+	return realRating - predictedRating
+}
+
+func CalculateUserNewLatentFactor(userLatentFactor, movieLatentFactor []float64, learningRate, ratingError, regularizationParameter float64) {
+	for index := range userLatentFactor {
+		userLatentFactor[index] = userLatentFactor[index] + learningRate*(ratingError*movieLatentFactor[index]-regularizationParameter*userLatentFactor[index])
+	}
+}
+
+func (e *Engine) Run() {
+	for range e.NumberOfEpochs{
+		
+	}
 }
 
 func main() {
