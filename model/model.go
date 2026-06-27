@@ -2,7 +2,6 @@ package model
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io"
 	"math/rand/v2"
 	"os"
@@ -178,12 +177,20 @@ func ModelRunner() {
 	engine := New(rating, conf)
 	engine.Run()
 
-	for _, data := range engine.Data[:100] {
-		userList := engine.User[data.UserID]
-		movieList := engine.Movies[data.MovieID]
+	SaveModel(constants.ModelPath, Model{
+		engine.User,
+		engine.Movies,
+		engine.NumberOfLatentFactors,
+		engine.LearningRate,
+		engine.RegularizationParameter,
+		engine.NumberOfEpochs,
+	})
+	// for _, data := range engine.Data[:100] {
+	// 	userList := engine.User[data.UserID]
+	// 	movieList := engine.Movies[data.MovieID]
 
-		dot := DotProduct(userList, movieList)
+	// 	dot := DotProduct(userList, movieList)
 
-		fmt.Printf("real rating %f | my prediction %f | %f \n", data.Rating, dot, Error(dot, data.Rating))
-	}
+	// 	fmt.Printf("real rating %f | my prediction %f | %f \n", data.Rating, dot, Error(dot, data.Rating))
+	// }
 }
