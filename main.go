@@ -81,15 +81,39 @@ func Error(predictedRating float64, realRating float64) float64 {
 	return realRating - predictedRating
 }
 
-func CalculateUserNewLatentFactor(userLatentFactor, movieLatentFactor []float64, learningRate, ratingError, regularizationParameter float64) {
-	for index := range userLatentFactor {
-		userLatentFactor[index] = userLatentFactor[index] + learningRate*(ratingError*movieLatentFactor[index]-regularizationParameter*userLatentFactor[index])
+func UpdateLatentFactors(
+	userLatentFactor []float64,
+	movieLatentFactor []float64,
+	learningRate float64,
+	ratingError float64,
+	regularizationParameter float64,
+) {
+	for i := range userLatentFactor {
+		oldUser := userLatentFactor[i]
+		oldMovie := movieLatentFactor[i]
+
+		userLatentFactor[i] = oldUser + learningRate*(ratingError*oldMovie-regularizationParameter*oldUser)
+		movieLatentFactor[i] = oldMovie + learningRate*(ratingError*oldUser-regularizationParameter*oldMovie)
 	}
 }
 
 func (e *Engine) Run() {
-	for range e.NumberOfEpochs{
-		
+	for epoch := 0; epoch < e.NumberOfEpochs; epoch++ {
+		for _, row := range e.Data {
+			userLatentFactor := e.User[row.UserID]
+			movieLatentFactor := e.Movies[row.MovieID]
+
+			predictedRating := DotProduct(userLatentFactor, movieLatentFactor)
+			ratingError := Error(predictedRating, row.Rating)
+
+			UpdateLatentFactors(
+				userLatentFactor,
+				movieLatentFactor,
+				e.LearningRate,
+				ratingError,
+				e.RegularizationParameter,
+			)
+		}
 	}
 }
 
