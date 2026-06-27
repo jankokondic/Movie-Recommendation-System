@@ -10,3 +10,4 @@ type Rating struct {
 	Rating    float64
 	Timestamp string
 }
+
