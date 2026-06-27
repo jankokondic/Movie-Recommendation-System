@@ -9,16 +9,16 @@ import (
 )
 
 func main() {
-	conf := model.Configuration{
-		NumberOfLatentFactors:   20,
-		LearningRate:            0.01,
-		RegularizationParameter: 0.02,
-		NumberOfEpochs:          20,
-		InitializationMin:       -0.1,
-		InitializationMax:       0.1,
-	}
+	// conf := model.Configuration{
+	// 	NumberOfLatentFactors:   20,
+	// 	LearningRate:            0.01,
+	// 	RegularizationParameter: 0.02,
+	// 	NumberOfEpochs:          20,
+	// 	InitializationMin:       -0.1,
+	// 	InitializationMax:       0.1,
+	// }
 
-	model.ModelRunner(conf)
+	// model.ModelRunner(conf)
 
 	trainedModel, err := model.LoadModel(constants.ModelPath)
 	if err != nil {
@@ -27,6 +27,12 @@ func main() {
 	}
 
 	testData := reader.ReadTestData(constants.TestFilePath)
+
+	listMovies := model.TopMoviesForUserByID(testData, trainedModel, 1, 10)
+	for _, value := range listMovies {
+		fmt.Println(value)
+	}
+
 	evaluation := model.Test(testData, trainedModel)
 
 	fmt.Println("MF:", evaluation.MatrixFactorization)

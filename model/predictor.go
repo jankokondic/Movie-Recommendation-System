@@ -3,6 +3,7 @@ package model
 import (
 	"math"
 	"root/constants"
+	"sort"
 )
 
 type Statistic struct {
@@ -152,4 +153,50 @@ func Test(newData []constants.Rating, model Model) Evaluation {
 		MovieAverage:        SafeMetrics(movieAbs, movieSq, movieCount),
 		ErrorHistogram:      hist,
 	}
+}
+
+type Predictor struct {
+	MovieID int
+	Rating  float64
+}
+
+func TopMoviesForUserByID(newData []constants.Rating, model Model, userID, topRange int) []Predictor {
+	var listOfMovies []Predictor
+
+	userVector, userExist := model.UserLatentFactor[userID]
+	if !userExist {
+		return nil
+	}
+
+	addedMovies := make(map[int]struct{})
+
+	for _, value := range newData {
+		if _, ok := addedMovies[value.MovieID]; ok {
+			continue
+		}
+
+		movieVector, movieExist := model.MovieLatentFactor[value.MovieID]
+		if !movieExist {
+			continue
+		}
+
+		prediction := DotProduct(userVector, movieVector)
+
+		listOfMovies = append(listOfMovies, Predictor{
+			MovieID: value.MovieID,
+			Rating:  prediction,
+		})
+
+		addedMovies[value.MovieID] = struct{}{}
+	}
+
+	sort.Slice(listOfMovies, func(i, j int) bool {
+		return listOfMovies[i].Rating > listOfMovies[j].Rating
+	})
+
+	if topRange > len(listOfMovies) {
+		topRange = len(listOfMovies)
+	}
+
+	return listOfMovies[:topRange]
 }
