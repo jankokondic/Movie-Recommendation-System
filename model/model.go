@@ -2,11 +2,13 @@ package model
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"math/rand/v2"
 	"os"
 	"root/constants"
 	"strconv"
+	"time"
 )
 
 type Configuration struct {
@@ -102,6 +104,7 @@ func UpdateLatentFactors(
 }
 
 func (e *Engine) Run() {
+	start := time.Now()
 	for epoch := 0; epoch < e.NumberOfEpochs; epoch++ {
 		for _, row := range e.Data {
 			userLatentFactor := e.User[row.UserID]
@@ -119,6 +122,8 @@ func (e *Engine) Run() {
 			)
 		}
 	}
+
+	fmt.Println(time.Since(start))
 }
 
 func ModelRunner(conf Configuration) {
@@ -167,8 +172,6 @@ func ModelRunner(conf Configuration) {
 
 	stat := NewStat()
 	stat.Load(rating)
-
-	
 
 	engine := New(rating, conf)
 	engine.Run()
