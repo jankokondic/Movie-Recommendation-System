@@ -1,0 +1,10 @@
+sudo docker build -t recommender .
+
+docker run --rm \
+-e NUMBER_OF_LATENT_FACTORS=50 \
+-e LEARNING_RATE=0.005 \
+-e REGULARIZATION_PARAMETER=0.01 \
+-e NUMBER_OF_EPOCHS=30 \
+-e INITIALIZATION_MIN=-0.05 \
+-e INITIALIZATION_MAX=0.05 \
+recommender
