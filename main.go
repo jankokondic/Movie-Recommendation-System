@@ -22,4 +22,5 @@ func main() {
 	fmt.Println("Global:", evaluation.GlobalAverage)
 	fmt.Println("User:", evaluation.UserAverage)
 	fmt.Println("Movie:", evaluation.MovieAverage)
+	fmt.Println("Histogram", evaluation.ErrorHistogram)
 }
