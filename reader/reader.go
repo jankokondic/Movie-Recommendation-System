@@ -6,6 +6,7 @@ import (
 	"os"
 	"root/constants"
 	"strconv"
+	"strings"
 )
 
 func ReadAndSeparate() {
@@ -176,4 +177,44 @@ func ReadTestData(path string) []constants.Rating {
 	}
 
 	return rating
+}
+
+type Movie struct {
+	MovieId int
+	Title   string
+	Genres  []string
+}
+
+func LoadMovies(path string) (map[int]Movie, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	reader.LazyQuotes = true
+	reader.FieldsPerRecord = -1
+
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var movies map[int]Movie = make(map[int]Movie)
+
+	for _, record := range records {
+		movieId, err := strconv.Atoi(record[0])
+		if err != nil {
+			panic(err)
+		}
+
+		movies[movieId] = Movie{
+			MovieId: movieId,
+			Title:   record[1],
+			Genres:  strings.Split(record[2], "|"),
+		}
+	}
+
+	return movies, nil
 }

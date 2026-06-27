@@ -28,9 +28,15 @@ func main() {
 
 	testData := reader.ReadTestData(constants.TestFilePath)
 
+	loadMovie, err := reader.LoadMovies(constants.MoviePath)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	listMovies := model.TopMoviesForUserByID(testData, trainedModel, 1, 10)
 	for _, value := range listMovies {
-		fmt.Println(value)
+		fmt.Println(loadMovie[value.MovieID])
 	}
 
 	evaluation := model.Test(testData, trainedModel)
