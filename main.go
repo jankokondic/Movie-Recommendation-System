@@ -4,18 +4,34 @@ import (
 	"encoding/csv"
 	"io"
 	"os"
+	"root/constants"
 	"strconv"
 )
 
-const TrainFilePath string = "train.csv"
-const TestFilePath string = "test.csv"
-const Percentage int = 70
+type Configuration struct {
+	NumberOfLatentFactors   int
+	LearningRate            int
+	RegularizationParameter int
+	NumberOfEpochs          int
+}
 
-type Rating struct {
-	UserID    int
-	MovieID   int
-	Rating    float64
-	Timestamp string
+type Engine struct {
+	User   map[string][]float64
+	Movies map[string][]float64
+	Data   []constants.Rating
+	Configuration
+}
+
+func New(data []constants.Rating) *Engine {
+	return &Engine{
+		User:   make(map[string][]float64),
+		Movies: make(map[string][]float64),
+		Data:   data,
+	}
+}
+
+func (e *Engine) Init() {
+
 }
 
 func main() {
@@ -25,40 +41,13 @@ func main() {
 	}
 	defer inputFile.Close()
 
-	os.Remove(TrainFilePath)
-	os.Remove(TestFilePath)
-
 	reader := csv.NewReader(inputFile)
-
-	trainFile, err := os.OpenFile(TrainFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
-	defer trainFile.Close()
-
-	testFile, err := os.OpenFile(TestFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
-	defer testFile.Close()
-
-	trainWriter := csv.NewWriter(trainFile)
-	defer trainWriter.Flush()
-
-	testWriter := csv.NewWriter(testFile)
-	defer testWriter.Flush()
-
-	var currentUserID int
-	var currentUserRatings []Rating
-	firstRow := true
+	var rating []constants.Rating
 
 	for {
 		record, err := reader.Read()
 
 		if err == io.EOF {
-			if len(currentUserRatings) > 0 {
-				writeSplit(currentUserRatings, trainWriter, testWriter)
-			}
 			break
 		}
 
@@ -81,62 +70,14 @@ func main() {
 			panic(err)
 		}
 
-		rating := Rating{
+		rating = append(rating, constants.Rating{
 			UserID:    userID,
 			MovieID:   movieID,
 			Rating:    ratingValue,
 			Timestamp: record[3],
-		}
-
-		if firstRow {
-			currentUserID = userID
-			currentUserRatings = append(currentUserRatings, rating)
-			firstRow = false
-			continue
-		}
-
-		if userID != currentUserID {
-			writeSplit(currentUserRatings, trainWriter, testWriter)
-
-			currentUserID = userID
-			currentUserRatings = []Rating{rating}
-		} else {
-			currentUserRatings = append(currentUserRatings, rating)
-		}
-	}
-}
-
-func writeSplit(ratings []Rating, trainWriter *csv.Writer, testWriter *csv.Writer) {
-	length := len(ratings)
-
-	if length == 0 {
-		return
-	}
-
-	trainCount := length * Percentage / 100
-
-	if trainCount == 0 {
-		trainCount = 1
-	}
-
-	if trainCount == length && length > 1 {
-		trainCount = length - 1
-	}
-
-	writeRatings(trainWriter, ratings[:trainCount])
-	writeRatings(testWriter, ratings[trainCount:])
-}
-
-func writeRatings(writer *csv.Writer, ratings []Rating) {
-	for _, r := range ratings {
-		err := writer.Write([]string{
-			strconv.Itoa(r.UserID),
-			strconv.Itoa(r.MovieID),
-			strconv.FormatFloat(r.Rating, 'f', -1, 64),
-			r.Timestamp,
 		})
-		if err != nil {
-			panic(err)
-		}
 	}
+
+	engine := New(rating)
+
 }
