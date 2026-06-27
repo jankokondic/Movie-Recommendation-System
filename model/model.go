@@ -7,6 +7,7 @@ import (
 	"math/rand/v2"
 	"os"
 	"root/constants"
+	"root/reader"
 	"strconv"
 	"time"
 )
@@ -127,7 +128,9 @@ func (e *Engine) Run() {
 }
 
 func ModelRunner(conf Configuration) {
-	inputFile, err := os.Open("rating.csv")
+	reader.ReadAndSeparate(constants.RatingPath)
+
+	inputFile, err := os.Open(constants.TrainFilePath)
 	if err != nil {
 		panic(err)
 	}

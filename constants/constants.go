@@ -4,7 +4,8 @@ const TrainFilePath string = "train.csv"
 const TestFilePath string = "test.csv"
 const Percentage int = 70
 const ModelPath string = "model.j"
-const MoviePath string = "movie.csv"
+const MoviePath string = "data/movie.csv"
+const RatingPath string = "data/rating.csv"
 
 type Rating struct {
 	UserID    int

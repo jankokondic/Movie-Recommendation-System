@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-func ReadAndSeparate() {
-	inputFile, err := os.Open("rating.csv")
+func ReadAndSeparate(path string) {
+	inputFile, err := os.Open(path)
 	if err != nil {
 		panic(err)
 	}
