@@ -185,7 +185,7 @@ func ModelRunner() {
 		engine.RegularizationParameter,
 		engine.NumberOfEpochs,
 	})
-	
+
 	// for _, data := range engine.Data[:100] {
 	// 	userList := engine.User[data.UserID]
 	// 	movieList := engine.Movies[data.MovieID]
