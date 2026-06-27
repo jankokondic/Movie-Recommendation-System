@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"math/rand/v2"
 	"os"
@@ -30,12 +31,16 @@ func RandomFloat(min, max float64) float64 {
 }
 
 func New(data []constants.Rating, configuration Configuration) *Engine {
-	return &Engine{
+	e := &Engine{
 		User:          make(map[int][]float64),
 		Movies:        make(map[int][]float64),
 		Data:          data,
 		Configuration: configuration,
 	}
+
+	e.Init()
+
+	return e
 }
 
 func (e *Engine) CreateLatentFactor() []float64 {
@@ -171,5 +176,14 @@ func main() {
 	}
 
 	engine := New(rating, conf)
-	engine.Init()
+	engine.Run()
+
+	for _, data := range engine.Data[:100] {
+		userList := engine.User[data.UserID]
+		movieList := engine.Movies[data.MovieID]
+
+		dot := DotProduct(userList, movieList)
+
+		fmt.Printf("real rating %f | my prediction %f | %f \n", data.Rating, dot, Error(dot, data.Rating))
+	}
 }
