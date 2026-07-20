@@ -2,10 +2,16 @@ FROM golang:1.26.1-alpine AS builder
 
 WORKDIR /app
 
+RUN apk add --no-cache unzip
+
 COPY go.mod ./
 RUN go mod download
 
 COPY . .
+
+RUN unzip -j rating.csv.zip -d /app/data \
+    && test -f /app/data/rating.csv \
+    && rm rating.csv.zip
 
 RUN go build -o recommender .
 

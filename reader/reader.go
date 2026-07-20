@@ -21,6 +21,11 @@ func ReadAndSeparate(path string) {
 
 	reader := csv.NewReader(inputFile)
 
+	_, err = reader.Read()
+	if err != nil {
+		panic(err)
+	}
+
 	trainFile, err := os.OpenFile(constants.TrainFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		panic(err)
