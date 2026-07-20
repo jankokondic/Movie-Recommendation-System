@@ -115,10 +115,6 @@ func writeSplit(ratings []constants.Rating, trainWriter *csv.Writer, testWriter 
 		trainCount = 1
 	}
 
-	if trainCount == length && length > 1 {
-		trainCount = length - 1
-	}
-
 	writeRatings(trainWriter, ratings[:trainCount])
 	writeRatings(testWriter, ratings[trainCount:])
 }
@@ -198,7 +194,10 @@ func LoadMovies(path string) (map[int]Movie, error) {
 	defer file.Close()
 
 	reader := csv.NewReader(file)
+	// Be more tolerant of malformed CSV files containing unescaped or unmatched quotes.
 	reader.LazyQuotes = true
+
+	// Allow rows to contain a variable number of fields instead of enforcing a fixed column count.
 	reader.FieldsPerRecord = -1
 
 	records, err := reader.ReadAll()

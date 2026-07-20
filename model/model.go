@@ -106,6 +106,7 @@ func UpdateLatentFactors(
 
 func (e *Engine) Run() {
 	start := time.Now()
+
 	for epoch := 0; epoch < e.NumberOfEpochs; epoch++ {
 		for _, row := range e.Data {
 			userLatentFactor := e.User[row.UserID]
