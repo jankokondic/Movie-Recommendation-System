@@ -1,3 +1,5 @@
+https://www.kaggle.com/datasets/grouplens/movielens-20m-dataset?resource=download
+
 sudo docker build -t recommender .
 
 docker run --rm \
